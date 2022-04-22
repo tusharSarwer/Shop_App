@@ -33,10 +33,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> authentication(
-    String email,
-    String password,
-    String urlFormat,
-  ) async {
+      String email, String password, String urlFormat) async {
     try {
       String address =
           'https://identitytoolkit.googleapis.com/v1/accounts:$urlFormat?key=AIzaSyDVuQv5VU6e0paUXBwa3TtEKJsKvfS3C_A';

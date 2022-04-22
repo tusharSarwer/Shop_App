@@ -28,8 +28,11 @@ class ProductItem extends StatelessWidget {
       child: GridTile(
         child: InkWell(
             onTap: () {
-              Navigator.pushNamed(context, ProductDetailsScreen.routeName,
-                  arguments: product.id);
+              Navigator.pushNamed(
+                context,
+                ProductDetailsScreen.routeName,
+                arguments: product.id,
+              );
             },
             child: Hero(
               tag: product.id.toString(),

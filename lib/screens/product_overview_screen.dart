@@ -2,13 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../provider/product_provider.dart';
 import 'package:shop_app/provider/cart_provider.dart';
-import './cart_screen.dart';
-import 'package:shop_app/widgets/product_overview_screen/product_view.dart';
-import '../widgets/product_overview_screen/badge.dart';
 import 'package:shop_app/widgets/app_drawer.dart';
+import 'package:shop_app/widgets/product_overview_screen/product_view.dart';
+
+import './cart_screen.dart';
+import '../provider/product_provider.dart';
+import '../widgets/product_overview_screen/badge.dart';
 
 enum FilterOptions {
   Favorite,
@@ -24,23 +24,20 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   var _showOnlyFavorites = false;
-  var _isInit = true;
-  var _isloading = false;
+  // var _isInit = true;
+  // var _isloading = false;
+
+  Future? _productOverview;
+
+  Future _fetchProduct() {
+    return Provider.of<ProductProvider>(context, listen: false)
+        .fetchAndSetProducts();
+  }
 
   @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isloading = true;
-      });
-      Provider.of<ProductProvider>(context)
-          .fetchAndSetProducts()
-          .then((_) => setState(() {
-                _isloading = false;
-              }));
-    }
-    _isInit = false;
-    super.didChangeDependencies();
+  void initState() {
+    _productOverview = _fetchProduct();
+    super.initState();
   }
 
   @override
@@ -86,13 +83,29 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           ],
         ),
         drawer: AppDrawer(),
-        body: _isloading
-            ? Center(
+        body: FutureBuilder(
+          future: _productOverview,
+          builder: (context, dataSnapShot) {
+            if (dataSnapShot.connectionState == ConnectionState.waiting) {
+              return Center(
                 child: CircularProgressIndicator(),
-              )
-            : ProductView(
-                showFavorite: _showOnlyFavorites,
-              ),
+              );
+            } else {
+              if (dataSnapShot.error != null) {
+                return Center(
+                  child: Text(
+                    'Something went wrong!',
+                    style: TextStyle(fontSize: 25),
+                  ),
+                );
+              } else {
+                return ProductView(
+                  showFavorite: _showOnlyFavorites,
+                );
+              }
+            }
+          },
+        ),
       ),
     );
   }

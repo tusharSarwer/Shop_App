@@ -100,7 +100,7 @@ class ProductProvider with ChangeNotifier {
           price: prodData['price'],
           isFavorite:
               favoriteData == null ? false : favoriteData[prodId] ?? false,
-        ));
+        ),);
       });
 
       _item = loadedProducts;
